@@ -40,7 +40,7 @@ def readLines(filename):
     lines = open(filename, encoding='utf-8').read().strip().split('\n')
     return [unicodeToAscii(line) for line in lines]
 
-for filename in findFiles('data/names/*.txt'):
+for filename in findFiles('myData/train/*.txt'):
     category = os.path.splitext(os.path.basename(filename))[0]
     all_categories.append(category)
     lines = readLines(filename)
@@ -148,7 +148,18 @@ plt.figure()
 plt.plot(all_losses)
 plt.show()
 
+torch.save(rnn,"LSTM2L.pt")
+# rnn = torch.load("LSTM2L.pt")
 
+category_lines = {}
+
+for filename in findFiles('myData/test/*.txt'):
+    category = os.path.splitext(os.path.basename(filename))[0]
+    all_categories.append(category)
+    lines = readLines(filename)
+    category_lines[category] = lines
+    
+    
 # Keep track of correct guesses in a confusion matrix
 confusion = torch.zeros(n_categories, n_categories)
 n_confusion = 100000
