@@ -22,16 +22,18 @@ class RNN(nn.Module):
         self.input_size = input_size
 
         #LSTM
-        self.lstm = nn.LSTM(input_size, hidden_size).to(device)
+        self.lstm = nn.LSTM(input_size, hidden_size).to(device)        
+        self.lstm2 = nn.LSTM(input_size, hidden_size).to(device)
         self.hidden2Cat = nn.Linear(hidden_size, output_size).to(device)
         self.hidden = self.init_hidden()
 
     def forward(self, input):
 
-        lstm_out, self.hidden = self.lstm(input, self.hidden)
-        output = self.hidden2Cat(lstm_out[-1]) #many to one
+       for letter in input:
+          lstm_out1, self.hidden = self.lstm(letter.unsqueeze(0), self.hidden)
+          lstm_out2, self.hidden = self.lstm(letter.unsqueeze(0), [lstm_out1,self.hidden[1]])
+        output = self.hidden2Cat(lstm_out2[-1]) #many to one
         output = F.log_softmax(output, dim=1)
-
         return output
 
     def init_hidden(self):
